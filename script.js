@@ -166,14 +166,14 @@ window.addEventListener('scroll', () => {
     }
 });
 
-// Add glitch effect to hero name
+// Enhanced glitch effect to hero name with robotic transformation
 const heroName = document.querySelector('.hero-name');
 if (heroName) {
     let glitchInterval;
+    const originalText = heroName.textContent;
     
     function addGlitch() {
-        const originalText = heroName.textContent;
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
         let iterations = 0;
         
         glitchInterval = setInterval(() => {
@@ -183,6 +183,7 @@ if (heroName) {
                     if (index < iterations) {
                         return originalText[index];
                     }
+                    if (char === ' ') return ' ';
                     return chars[Math.floor(Math.random() * chars.length)];
                 })
                 .join('');
@@ -190,6 +191,7 @@ if (heroName) {
             if (iterations >= originalText.length) {
                 clearInterval(glitchInterval);
                 heroName.textContent = originalText;
+                glitchInterval = null;
             }
             
             iterations += 1 / 3;
@@ -202,7 +204,116 @@ if (heroName) {
             addGlitch();
         }
     });
+    
+    // Add random glitch effect periodically
+    setInterval(() => {
+        if (Math.random() > 0.7 && !glitchInterval) {
+            addGlitch();
+        }
+    }, 5000);
 }
+
+// Create scan line overlay for robotic effect
+function createScanLine() {
+    const scanLine = document.createElement('div');
+    scanLine.className = 'scan-line-overlay';
+    document.body.appendChild(scanLine);
+    
+    // Randomly activate scan line
+    setInterval(() => {
+        if (Math.random() > 0.8) {
+            scanLine.classList.add('active');
+            setTimeout(() => {
+                scanLine.classList.remove('active');
+            }, 2000);
+        }
+    }, 3000);
+}
+
+// Initialize scan line
+createScanLine();
+
+// Add glitch effect to section titles on hover
+document.querySelectorAll('.section-title').forEach(title => {
+    title.addEventListener('mouseenter', function() {
+        this.style.animation = 'gradientShift 6s ease infinite, glitch 0.3s infinite, rgb-split 0.5s infinite';
+    });
+    
+    title.addEventListener('mouseleave', function() {
+        this.style.animation = 'gradientShift 6s ease infinite';
+    });
+});
+
+// Add transformation effect to project cards
+document.querySelectorAll('.project-card').forEach(card => {
+    let isGlitching = false;
+    
+    card.addEventListener('mouseenter', function() {
+        if (!isGlitching) {
+            isGlitching = true;
+            const title = this.querySelector('h3');
+            if (title) {
+                const originalText = title.textContent;
+                const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+                let glitchCount = 0;
+                
+                const glitchInterval = setInterval(() => {
+                    if (glitchCount < 5) {
+                        title.textContent = originalText
+                            .split('')
+                            .map((char, index) => {
+                                if (char === ' ') return ' ';
+                                if (Math.random() > 0.7) {
+                                    return chars[Math.floor(Math.random() * chars.length)];
+                                }
+                                return char;
+                            })
+                            .join('');
+                        glitchCount++;
+                    } else {
+                        title.textContent = originalText;
+                        clearInterval(glitchInterval);
+                        isGlitching = false;
+                    }
+                }, 50);
+            }
+        }
+    });
+});
+
+// Add digital rain effect (subtle)
+function createDigitalRain() {
+    const rainContainer = document.createElement('div');
+    rainContainer.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1;
+        opacity: 0.05;
+    `;
+    document.body.appendChild(rainContainer);
+    
+    for (let i = 0; i < 20; i++) {
+        const drop = document.createElement('div');
+        drop.style.cssText = `
+            position: absolute;
+            left: ${Math.random() * 100}%;
+            top: -20px;
+            width: 2px;
+            height: ${20 + Math.random() * 30}px;
+            background: linear-gradient(to bottom, transparent, rgba(91, 143, 184, 0.3));
+            animation: digital-rain ${3 + Math.random() * 4}s linear infinite;
+            animation-delay: ${Math.random() * 2}s;
+        `;
+        rainContainer.appendChild(drop);
+    }
+}
+
+// Initialize digital rain
+createDigitalRain();
 
 // Add counter animation for stats (if needed in future)
 function animateCounter(element, target, duration = 2000) {
